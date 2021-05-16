@@ -1,0 +1,2 @@
+tb tieba
+tt tencent
