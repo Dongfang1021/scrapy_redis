@@ -12,18 +12,18 @@ class DangdangSpider(RedisSpider):
     redis_key = "dangdang"
 
     def parse(self, response):
-        #大分类分组
+        #large category
         div_list = response.xpath("//div[@class='con flq_body']/div")
         for div in div_list:
             item = {}
             item["b_cate"] = div.xpath("./dl/dt//text()").extract()
             item["b_cate"] = [i.strip() for i in item["b_cate"] if len(i.strip())>0]
-            #中间分类分组
+            #middle category
             dl_list = div.xpath("./div//dl[@class='inner_dl']")
             for dl in dl_list:
                 item["m_cate"] = dl.xpath("./dt//text()").extract()
                 item["m_cate"] = [i.strip() for i in item["m_cate"] if len(i.strip())>0][0]
-                #小分类分组
+                #small category
                 a_list = dl.xpath("./dd/a")
                 for a in a_list:
                     item["s_href"] = a.xpath("./@href").extract_first()
@@ -49,7 +49,7 @@ class DangdangSpider(RedisSpider):
             item["book_publish_date"] = li.xpath("./p[@class='search_book_author']/span[2]/text()").extract_first()
             item["book_press"] = li.xpath("./p[@class='search_book_author']/span[3]/a/text()").extract_first()
             print(item)
-        #下一页
+        #Next page
         next_url = response.xpath("//li[@class='next']/a/@href").extract_first()
         if next_url is not None:
             next_url = urllib.parse.urljoin(response.url,next_url)
