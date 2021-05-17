@@ -10,11 +10,11 @@ class JdSpider(scrapy.Spider):
     start_urls = ['https://book.jd.com/booksort.html']
 
     def parse(self, response):
-        dt_list = response.xpath("//div[@class='mc']/dl/dt") #大分类列表
+        dt_list = response.xpath("//div[@class='mc']/dl/dt") #Large category
         for dt in dt_list:
             item = {}
             item["b_cate"] = dt.xpath("./a/text()").extract_first()
-            em_list = dt.xpath("./following-sibling::dd[1]/em") #小分类列表
+            em_list = dt.xpath("./following-sibling::dd[1]/em") #small category
             for em in em_list:
                 item["s_href"] = em.xpath("./a/@href").extract_first()
                 item["s_cate"] = em.xpath("./a/text()").extract_first()
@@ -26,7 +26,7 @@ class JdSpider(scrapy.Spider):
                         meta = {"item":deepcopy(item)}
                     )
 
-    def parse_book_list(self,response): #解析列表页
+    def parse_book_list(self,response): #url list
         item = response.meta["item"]
         li_list = response.xpath("//div[@id='plist']/ul/li")
         for li in li_list:
@@ -45,7 +45,7 @@ class JdSpider(scrapy.Spider):
                 meta = {"item":deepcopy(item)}
             )
 
-        #列表页翻页
+        #next page for url list
         next_url = response.xpath("//a[@class='pn-next']/@href").extract_first()
         if next_url is not None:
             next_url = urllib.parse.urljoin(response.url,next_url)
